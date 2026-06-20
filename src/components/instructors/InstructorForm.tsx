@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Save, User, Camera, Loader } from 'lucide-react';
 import apiClient from '@/src/services/apiClient';
+import { mediaService } from '@/src/services/mediaService';
 
 interface InstructorFormProps {
   onCancel: () => void;
@@ -30,13 +31,7 @@ export default function InstructorForm({ onCancel, onSave, initialData }: Instru
 
     try {
       setUploading(true);
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await apiClient.post('/media/upload', fd, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const res = await mediaService.uploadMedia(file, 'instructor-avatars');
       if (res && res.data && res.data.data && res.data.data.url) {
         setFormData({ ...formData, avatar: res.data.data.url });
       }

@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { ChevronLeft, Save, X, Image as ImageIcon, Loader } from 'lucide-react';
 import apiClient from '@/src/services/apiClient';
 import { instructorService } from '@/src/services/instructorService';
+import { mediaService } from '@/src/services/mediaService';
 
 interface CourseFormProps {
   onCancel: () => void;
@@ -93,17 +94,11 @@ export default function CourseForm({ onCancel, onSave, initialData }: CourseForm
 
     try {
       setUploading(true);
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await apiClient.post('/media/upload', fd, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const res = await mediaService.uploadMedia(file, 'course-thumbnails');
       if (res && res.data && res.data.data && res.data.data.url) {
         setFormData({ ...formData, thumbnail: res.data.data.url });
       }
-      console.log("course response:",res.data);
+      console.log("course response:", res.data);
     } catch (err) {
       console.error("Image upload failed:", err);
       alert("Failed to upload image.");

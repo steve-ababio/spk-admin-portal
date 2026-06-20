@@ -7,6 +7,7 @@ import { courseService } from '@/src/services/courseService';
 import { moduleService } from '@/src/services/moduleService';
 import { lessonService } from '@/src/services/lessonService';
 import apiClient from '@/src/services/apiClient';
+import { mediaService } from '@/src/services/mediaService';
 
 function getFileType(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase();
@@ -184,15 +185,8 @@ export default function Resources() {
 
     try {
       setUploading(true);
-      const fd = new FormData();
-      fd.append('file', uploadFile);
-
       // 1. Upload file
-      const res = await apiClient.post('/media/upload', fd, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const res = await mediaService.uploadMedia(uploadFile, 'lesson-resources');
       if (!res || !res.data || !res.data.data || !res.data.data.url) {
         throw new Error("Invalid response from media server");
       }
